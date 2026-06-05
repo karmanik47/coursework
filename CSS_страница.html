@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Курсовая: Эволюция CSS — Flexbox, Grid и Variables</title>
+    <style>
+        :root {
+            --page-bg: #eef3f8;
+            --surface: #ffffff;
+            --text: #22303f;
+            --muted: #5c6a7d;
+            --accent: #3273dc;
+            --accent-secondary: #e67e22;
+            --accent-strong: #16a085;
+            --shadow: 0 18px 40px rgba(34,48,63,0.08);
+            --radius: 18px;
+            --gap: 1.25rem;
+            --transition: 0.25s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--page-bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 3vw, 3rem);
+            color: #13263e;
+            margin-bottom: 0.75rem;
+        }
+
+        .header p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .course-outline {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            margin: 32px 0;
+        }
+
+        .outline-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .outline-card h3 {
+            margin-bottom: 0.75rem;
+            color: #1f2d3d;
+        }
+
+        .outline-card p {
+            color: var(--muted);
+        }
+
+        .comparison {
+            display: grid;
+            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .column {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .column h2 {
+            padding: 22px;
+            margin: 0;
+            text-align: center;
+            font-size: 1.45rem;
+        }
+
+        .retro-header {
+            background: #8b0000;
+            color: white;
+        }
+
+        .modern-header {
+            background: #223a5f;
+            color: white;
+        }
+
+        .demo-area {
+            padding: 24px;
+        }
+
+        .demo-area p {
+            margin-bottom: 18px;
+        }
+
+        .retro-demo {
+            font-family: 'Times New Roman', serif;
+        }
+
+        .retro-nav-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: #e0e0e0;
+        }
+
+        .retro-nav-table td {
+            border: 1px solid #333;
+            padding: 9px;
+            text-align: center;
+            background: #ccc;
+        }
+
+        .retro-nav-table a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .retro-cards {
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .retro-card {
+            float: left;
+            width: 32%;
+            margin-right: 2%;
+            background: #fff8e7;
+            border: 1px solid #999;
+            padding: 12px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .retro-card:nth-child(3) {
+            margin-right: 0;
+        }
+
+        .retro-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .retro-card p {
+            font-size: 0.95rem;
+        }
+
+        .retro-table-grid {
+            width: 100%;
+            border-collapse: collapse;
+            background: #eee;
+            margin-bottom: 20px;
+        }
+
+        .retro-table-grid td {
+            border: 1px solid #aaa;
+            padding: 14px;
+            text-align: center;
+            background: #ddd;
+        }
+
+        /* Стили для inline-block демонстрации */
+        .inline-demo-box {
+            background: #f7efdf;
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid #b58b6b;
+            border-radius: 8px;
+        }
+        .inline-row {
+            text-align: center;
+            font-size: 0; /* убираем пробелы между inline-block */
+        }
+        .inline-block-item {
+            display: inline-block;
+            width: 23%;
+            background: #f0e2c5;
+            border: 1px solid #aa7c58;
+            padding: 8px;
+            margin: 0 1% 10px 1%;
+            font-size: 0.9rem;
+            text-align: left;
+            vertical-align: top;
+            border-radius: 6px;
+        }
+        .inline-note {
+            font-size: 0.85rem;
+            background: #fff0cf;
+            padding: 6px;
+            margin-top: 8px;
+            border-left: 4px solid #b66b3a;
+        }
+
+        .retro-button {
+            background: blue;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .modern-demo {
+            --bg-nav: #34495e;
+            --text-nav: white;
+            --card-bg: #ffffff;
+            --card-shadow: 0 4px 18px rgba(0,0,0,0.12);
+            --border-radius: 14px;
+            --transition: all 0.3s ease;
+            --accent: #e67e22;
+            --accent-2: #16a085;
+            --surface-dark: #16213e;
+            --text-dark: #e6eaf3;
+        }
+
+        .modern-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.95rem;
+            background: var(--bg-nav);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .modern-nav a {
+            color: var(--text-nav);
+            text-decoration: none;
+            padding: 0.6rem 1rem;
+            background: rgba(255,255,255,0.17);
+            border-radius: 999px;
+            transition: var(--transition);
+        }
+
+        .modern-nav a:hover {
+            background: white;
+            color: #2c3e50;
+        }
+
+        .modern-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modern-card {
+            flex: 1 1 250px;
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            border-radius: var(--border-radius);
+            padding: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .modern-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .modern-card h3 {
+            margin-bottom: 0.85rem;
+        }
+
+        .modern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            background: #ecf0f1;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-item {
+            background: #3498db;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .modern-button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .modern-button:hover {
+            filter: brightness(0.92);
+        }
+
+        .modern-demo.dark-theme {
+            --bg-nav: #1a1a2e;
+            --card-bg: var(--surface-dark);
+            --card-shadow: 0 4px 18px rgba(0,0,0,0.28);
+            background: #0f1722;
+            color: var(--text-dark);
+        }
+
+        .modern-demo.dark-theme .modern-nav a {
+            background: rgba(255,255,255,0.08);
+            color: var(--text-dark);
+        }
+
+        .theme-toggle {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .info-text {
+            background: #f3f6fb;
+            padding: 22px;
+            border-radius: var(--radius);
+            margin-top: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .info-text h3 {
+            margin-bottom: 0.9rem;
+        }
+
+        .info-text ul {
+            margin: 0 0 16px 20px;
+            color: var(--muted);
+        }
+
+        .info-text p {
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        code {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1>📜 Курсовая работа: эволюция CSS — от базовых стилей к современным возможностям</h1>
+    </header>
+
+    <section class="course-outline">
+        <article class="outline-card">
+            <h3>Цель</h3>
+            <p>Показать, как за последние годы изменилась верстка, и почему современные подходы быстрее и удобнее.</p>
+        </article>
+        <article class="outline-card">
+            <h3>Задачи</h3>
+            <p>Сравнить ретро-верстку и современные макеты, продемонстрировать адаптивность и темизацию.</p>
+        </article>
+        <article class="outline-card">
+            <h3>Практика</h3>
+            <p>Создать веб-страницу, которая наглядно отражает тему курсовой работы.</p>
+        </article>
+    </section>
+
+    <section class="comparison">
+        <div class="column">
+            <h2 class="retro-header">🐢 Ретро-подход</h2>
+            <div class="demo-area retro-demo">
+                <p><strong>Навигация</strong> выполнена через таблицу <code>&lt;table&gt;</code>. Такое решение тяжело адаптировать под мобильные экраны.</p>
+                <table class="retro-nav-table">
+                    <tr>
+                        <td><a href="#">Главная</a></td>
+                        <td><a href="#">Flexbox</a></td>
+                        <td><a href="#">Grid</a></td>
+                        <td><a href="#">История</a></td>
+                    </tr>
+                </table>
+
+                <p><strong>Карточки</strong> построены на <code>float</code> и фиксированных ширинах. Это хорошо работает лишь на широких экранах.</p>
+                <div class="retro-cards">
+                    <div class="retro-card"><h3>CSS1</h3><p>Базовые стили, цвета, шрифты, без сложных макетов.</p></div>
+                    <div class="retro-card"><h3>CSS2</h3><p>Появились <code>float</code>, позиционирование и таблицы для макетов.</p></div>
+                    <div class="retro-card"><h3>Проблемы</h3><p>Нужны clearfix, жесткие размеры и множество костылей.</p></div>
+                </div>
+                <div style="clear:both"></div>
+
+                <p><strong>Сетка</strong> сделана таблицей. Такие макеты плохо масштабируются и усложняют поддержку.</p>
+                <table class="retro-table-grid">
+                    <tr><td>1</td><td>2</td><td>3</td></tr>
+                    <tr><td>4</td><td>5</td><td>6</td></tr>
+                </table>
+
+                <!-- Демонстрация inline-block (старый метод) -->
+                <p><strong>Inline-block</strong> — метод, популярный до Flexbox. Позволял создавать горизонтальные ряды, но имел недостатки.</p>
+                <div class="inline-demo-box">
+                    <div class="inline-row">
+                        <div class="inline-block-item">📘 Блок 1<br><small>ширина фикс.</small></div>
+                        <div class="inline-block-item">📗 Блок 2<br><small>пробелы из-за HTML</small></div>
+                        <div class="inline-block-item">📙 Блок 3<br><small>сложное выравнивание</small></div>
+                        <div class="inline-block-item">📕 Блок 4<br><small>перенос с зазорами</small></div>
+                    </div>
+                </div>
+
+                <p><strong>CSS Variables</strong> отсутствуют — все стили заданы напрямую.</p>
+                <button class="retro-button">Старая кнопка</button>
+                <p style="margin-top: 10px; font-size: 12px;">⚠️ При изменении ширины окна элементы съезжают, нет адаптивности.</p>
+            </div>
+        </div>
+
+        <div class="column">
+            <h2 class="modern-header">🚀 Современный подход</h2>
+            <div class="demo-area modern-demo" id="modernDemo">
+                <p><strong>Flexbox</strong> используется для навигации и карточек. Элементы автоматически выравниваются и переносятся.</p>
+                <div class="modern-nav">
+                    <a href="#">Главная</a>
+                    <a href="#">Flexbox</a>
+                    <a href="#">CSS Grid</a>
+                    <a href="#">Variables</a>
+                </div>
+
+                <p><strong>Карточки</strong> реализованы через Flexbox и легко адаптируются к ширине экрана.</p>
+                <div class="modern-cards">
+                    <div class="modern-card"><h3>Flexbox</h3><p>Удобен для выравнивания и распределения элементов вдоль одной оси.</p></div>
+                    <div class="modern-card"><h3>CSS Grid</h3><p>Лучше подходит для двухмерных макетов и сложных сеток.</p></div>
+                    <div class="modern-card"><h3>CSS Variables</h3><p>Позволяют задавать цвета и отступы в одном месте.</p></div>
+                </div>
+
+                <p><strong>CSS Grid</strong> строит адаптивную сетку с <code>auto-fit</code> и <code>minmax</code>.</p>
+                <div class="modern-grid">
+                    <div class="grid-item">Grid 1</div>
+                    <div class="grid-item">Grid 2</div>
+                    <div class="grid-item">Grid 3</div>
+                    <div class="grid-item">Grid 4</div>
+                </div>
+
+                <p><strong>CSS Variables</strong> используются для темы и позволяют быстро изменить оформление.</p>
+                <button class="modern-button" id="themeToggleBtn">🌙 Переключить тёмную тему</button>
+                <div class="theme-toggle"></div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const modernBlock = document.getElementById('modernDemo');
+    const toggleBtn = document.getElementById('themeToggleBtn');
+    let dark = false;
+
+    toggleBtn.addEventListener('click', () => {
+        modernBlock.classList.toggle('dark-theme');
+        dark = !dark;
+        toggleBtn.textContent = dark ? '☀️ Переключить светлую тему' : '🌙 Переключить тёмную тему';
+    });
+</script>
+</body>
+</html>
